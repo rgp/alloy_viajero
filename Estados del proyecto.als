@@ -16,22 +16,25 @@ pred pos  [n: Int] { n > 0 }
 	entre todas las ciudades. El viajero debe poder llegar a todas 
 	las ciudades y el trayecto propuesto no debe exceder el costo 
 	determinado por el usuario. 
+
+    El problema como tal dice:
+        Se tiene un conjunto de ciudades que visitar por un viajero,
+        que parte de una de esas ciudades.
+        El problema es encontrar una secuencia de ciudades comunicadas,
+        tales que el costo es a lo más un costo dado.
 */
 
 //- Código del estado del sistema para su proyecto, con comentarios explicando para qué sirve cada componente
 sig Viajero {
 	origin: one Ciudad,
-	destination: one Ciudad,
-	current: one Ciudad
+	destination: one Ciudad
 }
 
-sig Ciudad {
-	visitors: set Viajero
-}
+sig Ciudad {}
 
 sig Camino {
-	from: one Ciudad,
-	to: one Ciudad,
+	a: one Ciudad,
+	b: one Ciudad, // los caminos son reciprocos 
 	price : Int //es el precio de una ciudad a otra 
 }{
 	price >= 0
@@ -40,7 +43,10 @@ sig Camino {
 
 sig PopulationState {
 	visiting: Viajero one -> one Ciudad,
-	moving: Viajero one -> one Camino
+//	moving: Viajero one -> one Camino,  // sale sobrando
+	costoViaje: Viajero -> Int
+	visited: Viajero -> set Ciudad
+/* Recomendación... un solo viajero */
 }
 
 
