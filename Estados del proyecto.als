@@ -17,32 +17,54 @@ pred pos  [n: Int] { n > 0 }
 	las ciudades y el trayecto propuesto no debe exceder el costo 
 	determinado por el usuario. 
 */
+
 //- Código del estado del sistema para su proyecto, con comentarios explicando para qué sirve cada componente
 sig Viajero {
-	origin: lone Ciudad,
-	destination: lone Ciudad,
-	current: lone Ciudad
+	origin: one Ciudad,
+	destination: one Ciudad,
+	current: one Ciudad
 }
 
 sig Ciudad {
 	visitors: set Viajero
 }
 
-sig Conexion_Ciudad_Ciudad{
-	city: some Ciudad,
-	price : Int,//es el precio de una ciudad a otra 
-
+sig Camino {
+	from: one Ciudad,
+	to: one Ciudad,
+	price : Int //es el precio de una ciudad a otra 
 }{
-price > 0
+	price >= 0
+	from != to
+}
+
+sig PopulationState {
+	visiting: Viajero one -> one Ciudad,
+	moving: Viajero one -> one Camino
 }
 
 
 //- Declaración para incluir la utilería de ordenamiento de Alloy
 //- Fact con el estado inicial
 //- Predicado con la operación para pasar de un estado al siguiente
+pred Migrate(ps,ps': PopulationState, traveler: one Viajero, road: one 
+Camino) { 
+ // precondiciones
+// TODO   !!   traveler.current = traveler.(ps.visiting)
+
+//groom+bride in fs.single 
+// postcondiciones (cambios)
+//groom.(fs'.wife) = bride 
+// marco
+//fs'.married = fs.married+bride+groom 
+} 
 //- Fact para el estado siguiente de un estado dado
 //- Predicado con la meta para que el sistema entregue una solución
+/*
 
+run Migrate for 2
+
+*/
 
 //esto ejecuta el programa 
 pred viajero() {} 
