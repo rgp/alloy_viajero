@@ -28,25 +28,32 @@ open util/ordering[PopulationState]
 one sig Viajero {
 	origin: one Ciudad,
 	destination: one Ciudad
+}{
+	origin != destination
 }
 
-abstract sig Ciudad {}
+abstract sig Ciudad {
+	caminos: some Camino
+}
 
 one sig Ciudad1,Ciudad2,Ciudad3,Ciudad4,Ciudad5 extends Ciudad {}
 
 sig Camino {
 	a: one Ciudad,
 	b: one Ciudad, // los caminos son reciprocos 
-	price : Int //es el precio de una ciudad a otra 
+	//price : Int //es el precio de una ciudad a otra 
 }{
-	price >= 0
+	//price >= 0
 	a != b
 }
 
+fact soloUnCamino {
+	//all c:Camino | c.a in 
+}
+
 sig PopulationState {
-	visiting: Viajero one -> one Ciudad,
-//	moving: Viajero one -> one Camino,  // sale sobrando
-	costoViaje: Viajero -> Int,
+	visiting: Viajero lone -> one Ciudad,
+	//costoViaje: Viajero -> Int,
 	visited: Viajero -> set Ciudad
 /* Recomendación... un solo viajero */
 }
@@ -74,15 +81,12 @@ fact transicionEstado {
 }
 
 
-
-
-
 //- Predicado con la meta para que el sistema entregue una solución
 pred resuelveViajero() {
 	last[].visiting = Viajero -> Viajero.destination
 }
 
-run resuelveViajero for 5 expect 1
+run resuelveViajero for 10 expect 1
 /*
 
 run Migrate for 2
@@ -90,6 +94,6 @@ run Migrate for 2
 */
 
 //esto ejecuta el programa 
-pred viajero() {} 
+//pred viajero() {} 
 
-run viajero for 4
+//run viajero for 4
