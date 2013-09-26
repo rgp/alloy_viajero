@@ -48,7 +48,7 @@ sig Camino {
 }
 
 fact soloUnCamino {
-	//all c:Camino | c.a in 
+	no c:Camino | c.a in c.b
 }
 
 sig PopulationState {
@@ -58,6 +58,9 @@ sig PopulationState {
 /* Recomendación... un solo viajero */
 }
 
+fact mayor{
+	//mayores = Ciudad5->Ciudad4+Ciudad3->Ciudad2+Ciudad1->Ciudad2-Ciudad1
+}
 
 
 //- Fact con el estado inicial
@@ -70,6 +73,13 @@ pred Migrate(ps,ps': PopulationState, traveler: one Viajero, road: one
 Ciudad) { 
  // precondiciones
 // TODO   !!   traveler.current = traveler.(ps.visiting)
+//el origen no es el destino 
+	traveler.(ps.visiting) != road
+//el viajero se mueve a la ciudad destino
+ 	road = (traveler.(ps.visited))
+
+//el viajero se mueve de ciudad
+	ps'.visiting = ps.visiting - traveler->traveler.(ps.visiting) + traveler->road		
 // postcondiciones (cambios)
 // marco
 } 
