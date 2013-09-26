@@ -1,12 +1,6 @@
-//En comentarios, al inicio poner en unos cuantos renglones lo que hace su proyecto
-
-//modulo para utilizar operaciones aritmeticas
-module util/integer
-
-//- Declaración para incluir la utilería de ordenamiento de Alloy
-open util/ordering[PopulationState]
-
 /*
+			##########		 EL VIAJERO		 ############
+	
 	El problema a resolver es determinar un trayecto entre ciudades 
 	el cual el viajero pueda recorrer sin pasar dos veces por la misma 
 	ciudad y cuyo costo sea menor o igual al definido por el usuario.
@@ -24,7 +18,14 @@ open util/ordering[PopulationState]
         tales que el costo es a lo más un costo dado.
 */
 
+//modulo para utilizar operaciones aritmeticas
+module util/integer
+//- Declaración para incluir la utilería de ordenamiento de Alloy
+open util/ordering[PopulationState]
+
 //- Código del estado del sistema para su proyecto, con comentarios explicando para qué sirve cada componente
+
+/* Signatures */
 one sig Viajero {
 	origin: one Ciudad,
 	destination: one Ciudad
@@ -39,50 +40,52 @@ abstract sig Ciudad {
 one sig Ciudad1,Ciudad2,Ciudad3,Ciudad4,Ciudad5 extends Ciudad {}
 
 sig Camino {
-	a: one Ciudad,
-	b: one Ciudad, // los caminos son reciprocos 
+	a_city: one Ciudad,
+	b_city: one Ciudad, // los caminos son reciprocos 
 	//price : Int //es el precio de una ciudad a otra 
 }{
 	//price >= 0
-	a != b
-}
-
-fact soloUnCamino {
-	no c:Camino | c.a in c.b
+	a_city != b_city
 }
 
 sig PopulationState {
 	visiting: Viajero lone -> one Ciudad,
 	//costoViaje: Viajero -> Int,
-	visited: Viajero -> set Ciudad
+	visited: Viajero lone -> set Ciudad
 /* Recomendación... un solo viajero */
 }
 
-fact mayor{
-	//mayores = Ciudad5->Ciudad4+Ciudad3->Ciudad2+Ciudad1->Ciudad2-Ciudad1
+/* EOSignatures */
+
+fact todasLasCiudadesConectadas {
+	some c:Ciudad,  r1,r2:Camino | r1 in c.caminos && r2 in c.caminos
+}
+
+
+fact caminosReciprocos {
+	(a_city+b_city) = ~caminos
 }
 
 
 //- Fact con el estado inicial
 fact initialState {
 	first[].visiting = Viajero -> Viajero.origin
+	first[].visited  = first[].visiting
 }
 
 //- Predicado con la operación para pasar de un estado al siguiente
-pred Migrate(ps,ps': PopulationState, traveler: one Viajero, road: one 
-Ciudad) { 
- // precondiciones
-// TODO   !!   traveler.current = traveler.(ps.visiting)
-//el origen no es el destino 
-	traveler.(ps.visiting) != road
-//el viajero se mueve a la ciudad destino
- 	road = (traveler.(ps.visited))
+pred Migrate(ps,ps': PopulationState, traveler: one Viajero, next: one Ciudad) { 
+//####### PRECONDICIONES
+// Que la siguiente ciudad no sea la misma ni se haya visitado previamente
+next not in traveler.(ps.visited)
+next != traveler.(ps.visiting)
+//####### POSTCONDICIONES
+//la ciudad siguiente es la visitada
+ps'.visiting = (traveler -> next)
+//####### MARCO DE REFERENCIA
+ps'.visited = ps.visited + ps.visiting
+}
 
-//el viajero se mueve de ciudad
-	ps'.visiting = ps.visiting - traveler->traveler.(ps.visiting) + traveler->road		
-// postcondiciones (cambios)
-// marco
-} 
 //- Fact para el estado siguiente de un estado dado
 fact transicionEstado {
 	all hs:PopulationState,hs':next[hs] {
@@ -90,20 +93,9 @@ fact transicionEstado {
 	}
 }
 
-
 //- Predicado con la meta para que el sistema entregue una solución
 pred resuelveViajero() {
 	last[].visiting = Viajero -> Viajero.destination
 }
 
-run resuelveViajero for 10 expect 1
-/*
-
-run Migrate for 2
-
-*/
-
-//esto ejecuta el programa 
-//pred viajero() {} 
-
-//run viajero for 4
+run resuelveViajero for 5 expect 1
