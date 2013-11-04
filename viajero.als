@@ -42,7 +42,8 @@ one sig Ciudad1,Ciudad2,Ciudad3,Ciudad4,Ciudad5 extends Ciudad {}
 sig Camino {
 	a_city: some Ciudad,
 	b_city: some Ciudad, // los caminos son reciprocos 
-	//price : Int //es el precio de una ciudad a otra 
+	price : Int //es el precio de una ciudad a otra 
+
 }{
 	//price >= 0
 	a_city != b_city
@@ -79,8 +80,25 @@ assert ciudadesConectadas{
 	all c:Ciudad|  c.caminos.a_city =  Ciudad1+Ciudad2+Ciudad3+Ciudad4+Ciudad5
 }
 */
+/*
 
+*/
+//el camino mas corto 
+/*
+fun isum[iset: set Camino]: Int {
+  sum Camino: iset | Camino.price
+}
 
+pred  minimoCamino [iset: set Camino, num: Int, min: Int] {
+  #iset = num and
+  isum[iset] < min
+} 
+
+check {
+  no iset: set Camino |
+   iset.minimoCamino[3, 7]
+} for 10 but 5 Int
+*/
 
 //- Predicado con la operación para pasar de un estado al siguiente
 pred Migrate(ps,ps': PopulationState, traveler: one Viajero, next: one Ciudad) { 
