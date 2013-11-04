@@ -40,8 +40,8 @@ abstract sig Ciudad {
 one sig Ciudad1,Ciudad2,Ciudad3,Ciudad4,Ciudad5 extends Ciudad {}
 
 sig Camino {
-	a_city: one Ciudad,
-	b_city: one Ciudad, // los caminos son reciprocos 
+	a_city: some Ciudad,
+	b_city: some Ciudad, // los caminos son reciprocos 
 	//price : Int //es el precio de una ciudad a otra 
 }{
 	//price >= 0
@@ -72,6 +72,15 @@ fact initialState {
 	first[].visiting = Viajero -> Viajero.origin
 	first[].visited  = first[].visiting
 }
+//assert que todas las ciudades estan conectadas entre si 
+/*
+assert ciudadesConectadas{
+	all c:Ciudad |  c.caminos.b_city = Ciudad1+Ciudad2+Ciudad3+Ciudad4+Ciudad5
+	all c:Ciudad|  c.caminos.a_city =  Ciudad1+Ciudad2+Ciudad3+Ciudad4+Ciudad5
+}
+*/
+
+
 
 //- Predicado con la operación para pasar de un estado al siguiente
 pred Migrate(ps,ps': PopulationState, traveler: one Viajero, next: one Ciudad) { 
