@@ -45,7 +45,7 @@ sig Camino {
 	price : Int //es el precio de una ciudad a otra 
 
 }{
-	//price >= 0
+	price > 0
 	a_city != b_city
 }
 
