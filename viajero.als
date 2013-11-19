@@ -49,6 +49,7 @@ sig Camino {
 	a_city != b_city
 }
 
+
 sig PopulationState {
 	visiting: Viajero lone -> one Ciudad,
 	//costoViaje: Viajero -> Int,
@@ -59,12 +60,14 @@ sig PopulationState {
 /* EOSignatures */
 
 fact todasLasCiudadesConectadas {
-	all c:Ciudad,  r1,r2:Camino | r1 in c.caminos && r2 in c.caminos
+	all c:Ciudad | some r1,r2:Camino | (r1+r2) = c.caminos
 }
 
+/*
 fact todasLasCiudadesConectadas {
-	some c1,c2:Ciudad,  r:Camino | r in c1.caminos && r in c2.caminos
+	all r:Camino | some c1,c2:Ciudad | r in c1.caminos && r in c2.caminos
 }
+*/
 
 fact caminosReciprocos {
 	(a_city+b_city) = ~caminos
@@ -78,9 +81,9 @@ fact initialState {
 }
 //assert que todas las ciudades estan conectadas entre si 
 
+
 assert ciudadesConectadas{
-	all c:Ciudad |  c.caminos.b_city = (Ciudad1+Ciudad2+Ciudad3+Ciudad4+Ciudad5)
-	all c:Ciudad|  c.caminos.a_city =  (Ciudad1+Ciudad2+Ciudad3+Ciudad4+Ciudad5)
+	all c:Ciudad |  c.caminos.b_city = (Ciudad1+Ciudad2+Ciudad3+Ciudad4+Ciudad5) - c && c.caminos.a_city =  (Ciudad1+Ciudad2+Ciudad3+Ciudad4+Ciudad5) - c
 }
 
 
@@ -108,6 +111,7 @@ pred Migrate(ps,ps': PopulationState, traveler: one Viajero, next: one Ciudad) {
 	next not in traveler.(ps.visited)
 	next != traveler.(ps.visiting)
 	//####### POSTCONDICIONES
+	next in traveler.(ps.visiting.caminos.a_city + ps.visiting.caminos.b_city)
 	//la ciudad siguiente es la visitada
 	ps'.visiting = (traveler -> next)
 	//####### MARCO DE REFERENCIA
@@ -125,5 +129,5 @@ fact transicionEstado {
 pred resuelveViajero() {
 	last[].visiting = Viajero -> Viajero.destination
 }
-
+check ciudadesConectadas for 5
 run resuelveViajero for 5 expect 1
