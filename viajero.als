@@ -52,7 +52,7 @@ sig Camino {
 
 sig PopulationState {
 	visiting: Viajero lone -> one Ciudad,
-	//costoViaje: Viajero -> Int,
+	costoViaje: Viajero -> Int,
 	visited: Viajero lone -> set Ciudad
 /* Recomendación... un solo viajero */
 }
@@ -78,6 +78,7 @@ fact caminosReciprocos {
 fact initialState {
 	first[].visiting = Viajero -> Viajero.origin
 	first[].visited  = first[].visiting
+	Viajero.(first[].costoViaje) = 0
 }
 //assert que todas las ciudades estan conectadas entre si 
 
@@ -112,6 +113,7 @@ pred Migrate(ps,ps': PopulationState, traveler: one Viajero, next: one Ciudad) {
 	next != traveler.(ps.visiting)
 	//####### POSTCONDICIONES
 	next in traveler.(ps.visiting.caminos.a_city + ps.visiting.caminos.b_city)
+	traveler.(ps'.costoViaje) = traveler.(ps.costoViaje).plus[ ( (traveler.(ps.visiting)).caminos & (traveler.(ps'.visiting)).caminos ).price ]
 	//la ciudad siguiente es la visitada
 	ps'.visiting = (traveler -> next)
 	//####### MARCO DE REFERENCIA
