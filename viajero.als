@@ -46,6 +46,7 @@ sig Camino {
 
 }{
 	price > 0
+	price <= 2
 	a_city != b_city
 }
 
@@ -79,9 +80,8 @@ fact initialState {
 	first[].visiting = Viajero -> Viajero.origin
 	first[].visited  = first[].visiting
 	Viajero.(first[].costoViaje) = 0
-}
 //assert que todas las ciudades estan conectadas entre si 
-
+}
 
 assert ciudadesConectadas{
 	all c:Ciudad |  c.caminos.b_city = (Ciudad1+Ciudad2+Ciudad3+Ciudad4+Ciudad5) - c && c.caminos.a_city =  (Ciudad1+Ciudad2+Ciudad3+Ciudad4+Ciudad5) - c
@@ -131,5 +131,6 @@ fact transicionEstado {
 pred resuelveViajero() {
 	last[].visiting = Viajero -> Viajero.destination
 }
+
 check ciudadesConectadas for 5
 run resuelveViajero for 5 expect 1
