@@ -40,8 +40,8 @@ abstract sig Ciudad {
 one sig Ciudad1,Ciudad2,Ciudad3,Ciudad4,Ciudad5 extends Ciudad {}
 
 sig Camino {
-	a_city: some Ciudad,
-	b_city: some Ciudad, // los caminos son reciprocos 
+	a_city: one Ciudad,
+	b_city: one Ciudad, // los caminos son reciprocos
 	price : Int //es el precio de una ciudad a otra 
 
 }{
@@ -59,9 +59,12 @@ sig PopulationState {
 /* EOSignatures */
 
 fact todasLasCiudadesConectadas {
-	some c:Ciudad,  r1,r2:Camino | r1 in c.caminos && r2 in c.caminos
+	all c:Ciudad,  r1,r2:Camino | r1 in c.caminos && r2 in c.caminos
 }
 
+fact todasLasCiudadesConectadas {
+	some c1,c2:Ciudad,  r:Camino | r in c1.caminos && r in c2.caminos
+}
 
 fact caminosReciprocos {
 	(a_city+b_city) = ~caminos
@@ -74,15 +77,13 @@ fact initialState {
 	first[].visited  = first[].visiting
 }
 //assert que todas las ciudades estan conectadas entre si 
-/*
-assert ciudadesConectadas{
-	all c:Ciudad |  c.caminos.b_city = Ciudad1+Ciudad2+Ciudad3+Ciudad4+Ciudad5
-	all c:Ciudad|  c.caminos.a_city =  Ciudad1+Ciudad2+Ciudad3+Ciudad4+Ciudad5
-}
-*/
-/*
 
-*/
+assert ciudadesConectadas{
+	all c:Ciudad |  c.caminos.b_city = (Ciudad1+Ciudad2+Ciudad3+Ciudad4+Ciudad5)
+	all c:Ciudad|  c.caminos.a_city =  (Ciudad1+Ciudad2+Ciudad3+Ciudad4+Ciudad5)
+}
+
+
 //el camino mas corto 
 /*
 fun isum[iset: set Camino]: Int {
@@ -102,15 +103,15 @@ check {
 
 //- Predicado con la operación para pasar de un estado al siguiente
 pred Migrate(ps,ps': PopulationState, traveler: one Viajero, next: one Ciudad) { 
-//####### PRECONDICIONES
-// Que la siguiente ciudad no sea la misma ni se haya visitado previamente
-next not in traveler.(ps.visited)
-next != traveler.(ps.visiting)
-//####### POSTCONDICIONES
-//la ciudad siguiente es la visitada
-ps'.visiting = (traveler -> next)
-//####### MARCO DE REFERENCIA
-ps'.visited = ps.visited + ps.visiting
+	//####### PRECONDICIONES
+	// Que la siguiente ciudad no sea la misma ni se haya visitado previamente
+	next not in traveler.(ps.visited)
+	next != traveler.(ps.visiting)
+	//####### POSTCONDICIONES
+	//la ciudad siguiente es la visitada
+	ps'.visiting = (traveler -> next)
+	//####### MARCO DE REFERENCIA
+	ps'.visited = ps.visited + ps.visiting
 }
 
 //- Fact para el estado siguiente de un estado dado
