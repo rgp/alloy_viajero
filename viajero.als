@@ -46,7 +46,6 @@ sig Camino {
 
 }{
 	price > 0
-	price <= 2
 	a_city != b_city
 }
 
@@ -133,4 +132,4 @@ pred resuelveViajero() {
 }
 
 check ciudadesConectadas for 5
-run resuelveViajero for 5 expect 1
+run resuelveViajero for 5 expect 2
